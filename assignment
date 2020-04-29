@@ -1,0 +1,49 @@
+climate <- read.csv(file.choose())
+climate
+str(climate)
+
+# split the data into a training set, consisting of all the observations up to and including 2006, 
+#and a testing set consisting of the remaining years
+
+training = subset(climate , Year <= 2006)
+str(training)
+testing = subset(climate , Year > 2006)
+str(testing)
+
+
+#build a linear regression model to predict the dependent variable Temp, using MEI, CO2, CH4, N2O, CFC.11, CFC.12, TSI, and Aerosols as independent variables (Year and Month should NOT be used in the model). Use the training set to build the model.
+lineareg = lm(Temp ~ MEI + CO2 + CH4 + N2O
+              + CFC.11 + CFC.12 + TSI + Aerosols, data = training)
+str(lineareg)
+#Question :Build the model R2 (the "Multiple R-squared" value)
+#Question :WHich model is signficant
+summary(lineareg)    
+
+#Compute the correlations between all the variables in the training set. Which of the following independent variables is N2O highly correlated with (absolute correlation greater than 0.7)? 
+#Which of the following independent variables is CFC.11 highly correlated with? Select all that apply.
+
+cor(training)
+
+#Given that the correlations are so high, let us focus on the N2O variable and build a model with only MEI, TSI, Aerosols and N2O as independent variables. Remember to use the training set to build the model.
+
+lineareg1 = lm(Temp ~ MEI + N2O + TSI + Aerosols, data = training)
+
+#Question : Enter the coefficient of N2O in this reduced model:
+#Question :Enter the model R2:
+summary(lineareg1)
+
+#Step function 
+
+step <- step(lineareg)
+summary(step)
+
+ 
+#Problem 5 - Testing on Unseen Data 
+prediction <- predict(step, newdata = testing)
+SSE = sum((prediction - testing$Temp)^2)
+SST = sum((mean(training$Temp)- testing$Temp)^2)
+R = 1 - SSE/SST
+R
+
+
+
